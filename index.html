@@ -177,11 +177,7 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   fill: white;
   font-size: 30px;
   letter-spacing: 14px;
-  animation: ms-pulse 2.6s ease-in-out infinite;
-  transition: fill .2s;
 }
-.makerspace-link:hover .ms-label,
-.makerspace-link:focus-visible .ms-label { animation: none; fill: var(--golden); }
 .zlm { /* zone label main */
   font-family: var(--font-d);
   fill: white;
@@ -217,10 +213,7 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 
 .ms-border { transition: stroke .25s, stroke-width .25s; }
 .ms-border.lit { stroke: rgba(255,255,255,.55); stroke-width: 2; }
-.makerspace-link { cursor: pointer; }
-.makerspace-link text { transition: fill .2s; }
-.makerspace-link:hover text, .makerspace-link:focus-visible text { fill: rgba(255,255,255,.85); }
-.makerspace-link:focus-visible { outline: 2px solid var(--golden); outline-offset: 4px; border-radius: 4px; }
+.makerspace-link { cursor: default; }
 
 .hub-hint {
   margin-top: 20px;
@@ -1071,7 +1064,7 @@ html.parasail [tabindex] { cursor: inherit !important; }
 
         <!-- Outer label -->
         <rect id="ms-border" class="ms-border" x="-12" y="-26" width="624" height="670" rx="22" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="1.5" stroke-dasharray="6 5"/>
-        <g class="makerspace-link" tabindex="0" role="link" aria-label="Ann's Story — what everything adds up to">
+        <g class="makerspace-link">
           <rect x="-12" y="-26" width="624" height="42" rx="22" fill="rgba(0,0,0,0)"/>
           <text class="ms-label" x="300" y="4" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="24" letter-spacing="10">MAKERSPACE</text>
         </g>
@@ -1119,7 +1112,7 @@ html.parasail [tabindex] { cursor: inherit !important; }
         </g>
 
         <!-- DREAM zone (all three) -->
-        <g class="zone" id="z-dream" data-view="dream" data-circles="c-place c-people c-stuff" role="button" tabindex="0" aria-label="Explore Dream">
+        <g class="zone" id="z-dream" data-view="dream" data-circles="c-place c-people c-stuff" role="button" tabindex="0" aria-label="Dream — Ann's Story">
           <circle class="zone-hit" cx="300" cy="358" r="50"/>
           <rect x="251" y="339" width="98" height="36" rx="18" fill="rgba(10,22,30,.72)"/>
           <text class="zlo" x="300" y="362" text-anchor="middle" font-size="20" style="fill:#F9B91A;letter-spacing:.18em">DREAM</text>
@@ -1947,33 +1940,25 @@ html.parasail [tabindex] { cursor: inherit !important; }
 
     zone.addEventListener('mouseenter', function() { on(); playHover(); });
     zone.addEventListener('mouseleave', off);
-    zone.addEventListener('click', function() { navigate(zone.dataset.view); });
+    zone.addEventListener('click', function() {
+      if (zone.dataset.view === 'dream') { window.location.href = 'ann-story.html'; return; }
+      navigate(zone.dataset.view);
+    });
     zone.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(zone.dataset.view); }
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (zone.dataset.view === 'dream') { window.location.href = 'ann-story.html'; return; }
+        navigate(zone.dataset.view);
+      }
     });
     zone.addEventListener('touchstart', function() { on(); }, { passive: true });
-    zone.addEventListener('touchend', function() { off(); navigate(zone.dataset.view); });
+    zone.addEventListener('touchend', function() {
+      off();
+      if (zone.dataset.view === 'dream') { window.location.href = 'ann-story.html'; return; }
+      navigate(zone.dataset.view);
+    });
   });
 
-  /* ── MAKERSPACE box hover & click ── */
-  var msBorder = document.getElementById('ms-border');
-  var msCircles = ['c-place','c-people','c-stuff'].map(function(id){ return document.getElementById(id); });
-  var msLink = document.querySelector('.makerspace-link');
-  if (msLink) {
-    msLink.addEventListener('mouseenter', function() {
-      if (msBorder) msBorder.classList.add('lit');
-      msCircles.forEach(function(c){ if(c) c.classList.add('lit'); });
-      playHover();
-    });
-    msLink.addEventListener('mouseleave', function() {
-      if (msBorder) msBorder.classList.remove('lit');
-      msCircles.forEach(function(c){ if(c) c.classList.remove('lit'); });
-    });
-    msLink.addEventListener('click', function() { window.location.href = 'ann-story.html'; });
-    msLink.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.location.href = 'ann-story.html'; }
-    });
-  }
 
   /* ── Hash routing on load ── */
   var hash = location.hash.replace('#', '');
