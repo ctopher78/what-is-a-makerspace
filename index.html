@@ -1,0 +1,2246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Golden Makers — What Is a Makerspace?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap">
+<script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+<style>
+/* ── Design tokens ── */
+:root {
+  --teal: #1B5C72;
+  --teal-l: #2E8AAB;
+  --teal-m: #C8E6EF;
+  --golden: #F9B91A;
+  --golden-d: #C4900D;
+  --dusk: #1A2E3B;
+  --mesa: #C07A3A;
+  --mesa-l: #E4AA72;
+  --foothills: #4E7A35;
+  --foothills-l: #7EAC5E;
+  --creek: #3D8FA3;
+
+  --bg: #FAF9F7;
+  --surface: #FFFFFF;
+  --fg: #1C1A17;
+  --fg-2: #6B6259;
+  --fg-3: #A89E95;
+  --border: #E4E0DB;
+  --border-s: #F2F0EC;
+
+  --shadow-sm: 0 1px 3px rgba(28,26,23,.10), 0 1px 2px rgba(28,26,23,.06);
+  --shadow-md: 0 4px 12px rgba(28,26,23,.12), 0 2px 4px rgba(28,26,23,.06);
+  --shadow-teal: 0 4px 16px rgba(27,92,114,.25);
+  --shadow-golden: 0 4px 16px rgba(249,185,26,.30);
+
+  --r-sm: 4px; --r-md: 8px; --r-lg: 12px; --r-xl: 20px; --r-full: 9999px;
+  --font-d: 'Bebas Neue', 'Arial Narrow', Arial, sans-serif;
+  --font-b: 'DM Sans', system-ui, -apple-system, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1A24; --surface: #132030;
+    --fg: #F3EEE7; --fg-2: #9A8E84; --fg-3: #5A6E78;
+    --border: #2A3D4E; --border-s: #1A2E3B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1A24; --surface: #132030;
+  --fg: #F3EEE7; --fg-2: #9A8E84; --fg-3: #5A6E78;
+  --border: #2A3D4E; --border-s: #1A2E3B;
+  color-scheme: dark;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: var(--font-b);
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  padding-left: max(0px, env(safe-area-inset-left, 0px));
+  padding-right: max(0px, env(safe-area-inset-right, 0px));
+}
+h1,h2,h3,h4,h5,h6,p,ul,ol { margin: 0; }
+button { cursor: pointer; font-family: inherit; border: none; background: none; }
+
+/* ── View system ── */
+.view { display: none; min-height: 100vh; }
+.view.active { display: block; animation: fadeUp .4s ease-out both; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) { .view.active { animation: none; } }
+
+/* ── Hub ── */
+.hub {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(26,46,59,.68), rgba(26,46,59,.68)),
+    url('images/photo-downtown-night.avif') center / cover no-repeat;
+  background-color: var(--dusk);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 max(16px, env(safe-area-inset-left, 0px));
+  padding-bottom: max(32px, env(safe-area-inset-bottom, 0px));
+  position: relative;
+}
+.hub-header {
+  width: 100%;
+  max-width: 580px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding-top: max(20px, env(safe-area-inset-top, 0px));
+  padding-bottom: 24px;
+}
+.hub-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-d);
+  font-size: 24px;
+  letter-spacing: .07em;
+  color: white;
+}
+.hub-logo-icon {
+  height: 34px;
+  width: auto;
+}
+.hub-tagline {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--golden);
+  opacity: .8;
+}
+.hub-titles {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.hub-h1 {
+  font-family: var(--font-d);
+  font-size: clamp(28px, 5.5vw, 52px);
+  letter-spacing: .05em;
+  color: white;
+  line-height: 1;
+  text-wrap: balance;
+}
+.hub-sub {
+  margin-top: 8px;
+  font-size: 13px;
+  color: rgba(255,255,255,.75);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  animation: label-pulse 2.6s ease-in-out infinite;
+}
+
+/* ── Venn ── */
+.venn-wrap {
+  width: 100%;
+  max-width: 540px;
+  background: var(--dusk);
+  border-radius: 28px;
+  overflow: hidden;
+  isolation: isolate;
+  position: relative;
+}
+.venn-wrap svg { display: block; width: 100%; height: auto; }
+.vc { mix-blend-mode: screen; transition: filter .25s ease; pointer-events: none; }
+.vc.lit { filter: brightness(1.4) saturate(1.15); }
+.zone { cursor: pointer; outline: none; }
+.zone-hit { fill: transparent; }
+@keyframes label-pulse {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 5px rgba(255,255,255,.65)); }
+  50%       { opacity: .15; filter: drop-shadow(0 0 0px rgba(255,255,255,0)); }
+}
+@keyframes ms-pulse {
+  0%, 100% { opacity: 1;
+              filter: drop-shadow(0 0 8px rgba(255,255,255,1))
+                      drop-shadow(0 0 22px rgba(255,255,255,.6))
+                      drop-shadow(0 0 42px rgba(255,255,255,.25)); }
+  50%       { opacity: .1; filter: drop-shadow(0 0 0px rgba(255,255,255,0)); }
+}
+.ms-label {
+  fill: white;
+  font-size: 30px;
+  letter-spacing: 14px;
+  animation: ms-pulse 2.6s ease-in-out infinite;
+}
+.zlm { /* zone label main */
+  font-family: var(--font-d);
+  fill: white;
+  letter-spacing: .06em;
+  pointer-events: none;
+  paint-order: stroke fill;
+  stroke: rgba(0,0,0,.35);
+  stroke-width: 3px;
+  transition: fill .2s;
+  animation: label-pulse 2.6s ease-in-out infinite;
+}
+.zls { /* zone label sub */
+  font-family: var(--font-b);
+  fill: rgba(255,255,255,.55);
+  pointer-events: none;
+  transition: fill .2s;
+}
+.zlo { /* zone label overlap */
+  font-family: var(--font-b);
+  font-weight: 700;
+  fill: white;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: fill .2s;
+  animation: label-pulse 2.6s ease-in-out infinite;
+}
+.zone:hover .zlm,
+.zone:hover .zlo { animation: none; fill: var(--golden); }
+.zone:hover .zls { fill: rgba(255,255,255,.85); }
+.zone:focus-visible .zlm,
+.zone:focus-visible .zlo { animation: none; fill: var(--golden); }
+
+.ms-border { transition: stroke .25s, stroke-width .25s; }
+.ms-border.lit { stroke: rgba(255,255,255,.55); stroke-width: 2; }
+.makerspace-link { cursor: pointer; }
+.makerspace-link text { transition: fill .2s; }
+.makerspace-link:hover text, .makerspace-link:focus-visible text { fill: rgba(255,255,255,.85); }
+.makerspace-link:focus-visible { outline: 2px solid var(--golden); outline-offset: 4px; border-radius: 4px; }
+
+.hub-hint {
+  margin-top: 20px;
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Detail nav ── */
+.dnav {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 20;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 max(20px, env(safe-area-inset-left, 0px));
+  height: 52px;
+  gap: 12px;
+}
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal);
+  padding: 6px 14px 6px 10px;
+  border-radius: var(--r-full);
+  border: 1.5px solid var(--teal-m);
+  background: transparent;
+  transition: background .15s;
+}
+.back-btn:hover { background: var(--teal-m); }
+.dnav-logo {
+  height: 20px;
+  width: auto;
+  display: block;
+  margin-left: auto;
+  mix-blend-mode: multiply;
+  opacity: .6;
+}
+
+/* ── Detail hero ── */
+.dhero {
+  padding: 56px max(20px, env(safe-area-inset-left, 0px)) 40px;
+  max-width: 920px;
+  margin: 0 auto;
+  width: 100%;
+}
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.dh1 {
+  font-family: var(--font-d);
+  font-size: clamp(44px, 7vw, 88px);
+  letter-spacing: .04em;
+  line-height: 1;
+  color: var(--fg);
+  margin-bottom: 18px;
+  text-wrap: balance;
+}
+.dlead {
+  font-size: 19px;
+  line-height: 1.65;
+  color: var(--fg-2);
+  max-width: 620px;
+}
+
+/* ── Detail body ── */
+.dbody {
+  padding: 0 max(20px, env(safe-area-inset-left, 0px)) 80px;
+  max-width: 920px;
+  margin: 0 auto;
+  width: 100%;
+}
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  margin-bottom: 20px;
+  margin-top: 40px;
+}
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 40px 0;
+}
+
+/* ── Persona grid ── */
+.pgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+.pcard {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  padding: 22px 22px 20px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s, box-shadow .2s;
+}
+.pcard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--accent, var(--teal));
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+}
+.pcard:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.pcard-num {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--accent, var(--teal));
+  margin-bottom: 6px;
+}
+.pcard-name {
+  font-family: var(--font-d);
+  font-size: 26px;
+  letter-spacing: .04em;
+  color: var(--fg);
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.pcard-quote {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--fg-2);
+  font-style: italic;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-s);
+}
+.pcard-needs {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  margin-bottom: 8px;
+}
+.pcard-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.pcard-list li {
+  font-size: 13px;
+  color: var(--fg-2);
+  padding-left: 14px;
+  position: relative;
+}
+.pcard-list li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--accent, var(--teal));
+}
+
+/* ── Persona story layout ── */
+.persona-nav-wrap {
+  padding: 0 32px 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.persona-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 12px;
+}
+.ptile {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 16px 18px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent, var(--teal));
+  border-radius: var(--r-lg);
+  text-decoration: none;
+  color: var(--fg);
+  transition: transform .15s, box-shadow .15s;
+  cursor: pointer;
+}
+.ptile:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.ptile-num { font-size: 10px; font-weight: 700; letter-spacing: .15em; color: var(--accent, var(--teal)); text-transform: uppercase; }
+.ptile-name { font-family: var(--font-d); font-size: 20px; letter-spacing: .04em; line-height: 1.1; }
+.ptile-hint { font-size: 12px; color: var(--fg-2); line-height: 1.4; }
+
+.persona-section {
+  padding: 64px 32px;
+  border-top: 1px solid var(--border-s);
+  scroll-margin-top: 56px;
+}
+.persona-section.alt { background: var(--border-s); }
+.persona-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: center;
+}
+@media (max-width: 720px) {
+  .persona-row { grid-template-columns: 1fr; gap: 28px; }
+  .persona-nav-wrap { padding: 0 16px 32px; }
+  .persona-section { padding: 48px 16px; }
+}
+.persona-eyebrow {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.persona-title {
+  font-family: var(--font-d);
+  font-size: clamp(36px, 5vw, 58px);
+  letter-spacing: 1px;
+  line-height: 1.0;
+  margin-bottom: 16px;
+  color: var(--fg);
+  text-wrap: balance;
+}
+.persona-quote {
+  font-size: 18px;
+  line-height: 1.55;
+  font-style: italic;
+  color: var(--fg-2);
+  margin-bottom: 24px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border-s);
+}
+.needs-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  margin-bottom: 10px;
+}
+.persona-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.persona-list li {
+  font-size: 16px;
+  color: var(--fg-2);
+  line-height: 1.45;
+  padding-left: 20px;
+  position: relative;
+}
+.persona-list li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--accent, var(--teal));
+  font-weight: 700;
+}
+.persona-panel {
+  border-radius: 20px;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.panel-word {
+  font-family: var(--font-d);
+  font-size: 60px;
+  letter-spacing: 8px;
+  color: rgba(255,255,255,.18);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.panel-num {
+  font-family: var(--font-d);
+  font-size: 130px;
+  color: rgba(255,255,255,.08);
+  position: absolute;
+  bottom: -16px;
+  right: 10px;
+  line-height: 1;
+  pointer-events: none;
+}
+.panel-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: overlay;
+  opacity: 0.28;
+  pointer-events: none;
+  user-select: none;
+}
+.persona-stories {
+  max-width: 1100px;
+  margin: 40px auto 0;
+  padding-top: 36px;
+  border-top: 1px solid var(--border-s);
+}
+.stories-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--accent, var(--teal));
+  margin-bottom: 20px;
+}
+.stories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+.story-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 22px 24px;
+  border-top: 3px solid var(--accent, var(--teal));
+}
+.story-name {
+  font-family: var(--font-d);
+  font-size: 20px;
+  letter-spacing: .03em;
+  line-height: 1.1;
+  color: var(--fg);
+  margin-bottom: 3px;
+}
+.story-loc {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent, var(--teal));
+  margin-bottom: 10px;
+}
+.story-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fg-2);
+  margin: 0;
+}
+@media (max-width: 720px) {
+  .stories-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .stories-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Tool grid ── */
+.tgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+.tcard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s, box-shadow .2s;
+}
+.tcard:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.tcard svg { color: var(--fg-2); }
+.tcard-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg);
+  line-height: 1.3;
+}
+
+/* ── Info grid ── */
+.igrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+.icard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  padding-left: 28px;
+}
+.icard::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--accent, var(--teal));
+  border-radius: var(--r-lg) 0 0 var(--r-lg);
+}
+.icard-title {
+  font-family: var(--font-d);
+  font-size: 22px;
+  letter-spacing: .04em;
+  color: var(--fg);
+  margin-bottom: 6px;
+}
+.icard-body {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--fg-2);
+}
+
+/* ── Big quote ── */
+.bquote {
+  position: relative;
+  padding: 28px 28px 28px 52px;
+  border-radius: var(--r-xl);
+  background: var(--border-s);
+  margin: 32px 0;
+}
+.bquote::before {
+  content: '\201C';
+  position: absolute;
+  top: 12px; left: 16px;
+  font-size: 68px;
+  font-family: Georgia, serif;
+  line-height: 1;
+  color: var(--accent, var(--teal));
+  opacity: .35;
+}
+.bquote p {
+  font-size: 17px;
+  line-height: 1.72;
+  color: var(--fg);
+  font-style: italic;
+}
+.bquote cite {
+  display: block;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  margin-top: 10px;
+}
+
+/* ── Related zones ── */
+.related {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 48px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+.rzone-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--r-full);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border: 2px solid currentColor;
+  background: transparent;
+  transition: opacity .15s, background .15s;
+  cursor: pointer;
+  color: var(--link-color, var(--teal));
+}
+.rzone-btn:hover { opacity: .75; }
+.related-label {
+  font-size: 11px;
+  color: var(--fg-3);
+  align-self: center;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+
+/* ── Dream special ── */
+.dream-view { background: var(--dusk); }
+.dream-view .dnav {
+  background: rgba(26,46,59,.92);
+  border-bottom-color: rgba(255,255,255,.1);
+  backdrop-filter: blur(8px);
+}
+.dream-view .back-btn { color: rgba(255,255,255,.8); border-color: rgba(255,255,255,.2); }
+.dream-view .back-btn:hover { background: rgba(255,255,255,.08); }
+.dream-view .dnav-logo { mix-blend-mode: normal; filter: brightness(0) invert(1); opacity: .25; }
+.dream-view .dh1 { color: white; }
+.dream-view .dlead { color: rgba(255,255,255,.65); }
+.dream-view .eyebrow { color: var(--golden); }
+.dream-view .divider { background: rgba(255,255,255,.1); }
+.dream-view .bquote { background: rgba(255,255,255,.06); }
+.dream-view .bquote p { color: rgba(255,255,255,.85); }
+.dream-view .bquote cite { color: rgba(255,255,255,.35); }
+.dream-view .igrid .icard { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.1); }
+.dream-view .icard-title { color: white; }
+.dream-view .icard-body { color: rgba(255,255,255,.65); }
+.dream-view .related { border-top-color: rgba(255,255,255,.1); }
+.dream-view .related-label { color: rgba(255,255,255,.3); }
+.dream-view .section-label { color: rgba(255,255,255,.3); }
+
+/* ── Floorplan ── */
+.floorplan-wrap {
+  max-width: 900px;
+  margin: 32px auto 0;
+  padding: 0 max(16px, env(safe-area-inset-left,0px));
+}
+.floorplan-intro {
+  font-size: 14px; color: var(--fg-2); margin-bottom: 20px; text-align: center;
+}
+.floorplan-svg { width: 100%; height: auto; display: block; cursor: default; box-shadow: 0 6px 40px rgba(0,0,0,.45); border-radius: 2px; }
+.fp-room { cursor: pointer; }
+.fp-room .fp-room-floor { fill: transparent; transition: fill .15s; }
+.fp-room:hover .fp-room-floor, .fp-room .fp-room-floor.active { fill: rgba(0,0,0,.08); }
+.fp-aspiration { text-align:center; font-size:13px; color:var(--fg-3); padding:0 24px 24px; max-width:540px; margin:0 auto; line-height:1.6; }
+.fp-overlay {
+  display: none; position: fixed; inset: 0; z-index: 90;
+  background: rgba(0,0,0,.35);
+}
+.fp-overlay.open { display: block; }
+.fp-popup {
+  position: fixed; top: 50%; left: 50%; z-index: 91;
+  background: var(--surface); border-radius: 16px;
+  padding: 28px 32px 32px;
+  box-shadow: 0 8px 48px rgba(0,0,0,.35);
+  width: min(420px, calc(100vw - 48px));
+  max-height: 86vh; overflow-y: auto; scrollbar-width: none;
+  transform: translate(-50%, -50%) scale(.95);
+  opacity: 0; pointer-events: none;
+  transition: transform .22s ease, opacity .22s ease;
+}
+.fp-popup.open { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: all; }
+.fp-sec-label {
+  font-size: 9px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--fp-accent, var(--mesa)); margin: 16px 0 7px;
+}
+.fp-sec-label:first-child { margin-top: 0; }
+.fp-bullets {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.fp-bullets li {
+  display: flex; align-items: flex-start; gap: 9px;
+  font-size: 13px; color: var(--fg-2); line-height: 1.45;
+}
+.fp-bullets li::before {
+  content: ''; flex-shrink: 0;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--fp-accent, var(--mesa)); margin-top: 5px;
+}
+.fp-who {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.fp-who-chip {
+  background: var(--border-s); border: 1px solid var(--border);
+  border-radius: 20px; padding: 3px 10px;
+  font-size: 11px; color: var(--fg-2); font-weight: 500;
+}
+.fp-popup-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: .15em;
+  text-transform: uppercase; color: var(--fp-accent, var(--mesa)); margin-bottom: 6px;
+}
+.fp-popup-name {
+  font-family: var(--font-d); font-size: 28px; letter-spacing: .04em;
+  color: var(--fg); margin-bottom: 14px;
+}
+.fp-popup-tools {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.fp-popup-tools li {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; color: var(--fg-2);
+}
+.fp-popup-tools li::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--fp-accent, var(--mesa)); flex-shrink: 0;
+}
+.fp-popup-img-wrap {
+  margin: -28px -32px 20px;
+  overflow: hidden;
+  border-radius: 16px 16px 0 0;
+  height: 190px;
+  background: var(--border);
+}
+#fp-room-img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.fp-close {
+  position: absolute; top: 12px; right: 14px;
+  background: rgba(0,0,0,.45); border: none; cursor: pointer;
+  color: #fff; font-size: 16px; line-height: 1;
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Stuff category panels ── */
+.stuff-origin {
+  background: var(--surface-2);
+  border-radius: 14px;
+  padding: 22px 24px;
+  font-size: 15px;
+  color: var(--fg-2);
+  line-height: 1.65;
+  margin: 28px 0;
+  border-left: 3px solid var(--foothills);
+}
+.stuff-origin strong { color: var(--fg); }
+.stuff-cats {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 36px;
+}
+.stuff-cat {
+  border-radius: 20px;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 22px 26px;
+  transition: transform .15s ease, box-shadow .15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.stuff-cat:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(0,0,0,.22); }
+.stuff-cat:active { transform: translateY(-1px); }
+.stuff-cat-bg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; mix-blend-mode: overlay; opacity: 0.32;
+  pointer-events: none; user-select: none;
+}
+.stuff-cat-tag {
+  position: absolute; top: 18px; right: 18px;
+  background: rgba(255,255,255,.18); border-radius: 20px;
+  padding: 5px 11px; font-size: 10px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(255,255,255,.85); backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.stuff-cat-word {
+  font-family: var(--font-d);
+  font-size: 54px; letter-spacing: 5px;
+  color: rgba(255,255,255,.95);
+  line-height: 1; margin-bottom: 5px;
+  position: relative; z-index: 1;
+}
+.stuff-cat-sub {
+  font-size: 13px; color: rgba(255,255,255,.68);
+  position: relative; z-index: 1;
+}
+.stuff-cat-num {
+  font-family: var(--font-d); font-size: 110px;
+  color: rgba(255,255,255,.07);
+  position: absolute; bottom: -18px; right: 10px;
+  line-height: 1; pointer-events: none; user-select: none;
+}
+
+/* ── Stuff popup ── */
+.st-popup {
+  position: fixed; top: 50%; left: 50%; z-index: 92;
+  background: var(--surface); border-radius: 20px;
+  width: min(480px, calc(100vw - 32px));
+  max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 12px 56px rgba(0,0,0,.4);
+  transform: translate(-50%, -50%) scale(.95);
+  opacity: 0; pointer-events: none;
+  transition: transform .22s ease, opacity .22s ease;
+  scrollbar-width: none;
+}
+.st-popup::-webkit-scrollbar { display: none; }
+.st-popup.open { transform: translate(-50%,-50%) scale(1); opacity: 1; pointer-events: all; }
+.st-popup-header {
+  height: 170px; position: relative; overflow: hidden;
+  border-radius: 20px 20px 0 0; flex-shrink: 0;
+}
+.st-popup-header-img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.st-popup-header-ov {
+  position: absolute; inset: 0;
+  background: var(--st-grad, linear-gradient(135deg, #5A9044 0%, #2A5A18 100%));
+  opacity: .6;
+}
+.st-popup-htxt {
+  position: absolute; bottom: 16px; left: 20px; right: 52px;
+}
+.st-popup-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: .15em;
+  text-transform: uppercase; color: rgba(255,255,255,.7); margin-bottom: 3px;
+}
+.st-popup-name {
+  font-family: var(--font-d); font-size: 34px; letter-spacing: .04em;
+  color: #fff; line-height: 1;
+}
+.st-popup-body { padding: 20px 22px 26px; }
+.st-popup-desc {
+  font-size: 14px; color: var(--fg-2); line-height: 1.65; margin-bottom: 18px;
+}
+.st-sec-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .15em;
+  text-transform: uppercase; color: var(--fg-3); margin-bottom: 10px;
+}
+.st-item-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.st-item-tile {
+  border-radius: 12px; overflow: hidden; position: relative;
+  aspect-ratio: 4/3;
+}
+.st-item-tile-img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform .3s ease;
+}
+.st-item-tile:hover .st-item-tile-img { transform: scale(1.04); }
+.st-item-label {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.72) 0%, transparent 100%);
+  padding: 22px 10px 9px;
+  font-size: 11px; font-weight: 700; letter-spacing: .04em;
+  color: #fff; text-transform: uppercase;
+}
+.st-item-tile { cursor: pointer; }
+.st-subview-back {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 600; color: var(--fg-2);
+  background: var(--border-s); border: none; border-radius: 20px;
+  padding: 5px 12px 5px 9px; cursor: pointer; margin-bottom: 16px;
+  transition: background .15s;
+}
+.st-subview-back:hover { background: var(--border); }
+.st-subview-list {
+  list-style: none; padding: 0; margin: 0;
+}
+.st-subview-list li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; font-size: 13px; color: var(--fg-2);
+  border-bottom: 1px solid var(--border-s); line-height: 1.4;
+}
+.st-subview-list li:last-child { border-bottom: none; }
+.st-subview-list li::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--st-accent, var(--foothills)); flex-shrink: 0;
+}
+.st-popup-note {
+  background: var(--border-s);
+  border-radius: 10px; padding: 13px 15px;
+  font-size: 13px; color: var(--fg-2); line-height: 1.55;
+  display: flex; gap: 9px; align-items: flex-start;
+}
+.st-popup-note-icon {
+  width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
+  color: var(--st-accent, var(--foothills));
+}
+.st-close {
+  position: absolute; top: 12px; right: 14px; z-index: 10;
+  background: rgba(0,0,0,.45); border: none; cursor: pointer;
+  color: #fff; font-size: 15px; line-height: 1;
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .dhero { padding-top: 36px; }
+  .pgrid { grid-template-columns: 1fr; }
+  .tgrid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+  .igrid { grid-template-columns: 1fr; }
+  .st-item-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+
+<!-- ═══════════════════════════════════════════════
+     HUB VIEW
+     ═══════════════════════════════════════════════ -->
+<div id="view-hub" class="view active">
+  <div class="hub">
+    <header class="hub-header">
+      <div class="hub-logo">
+        <img src="images/logo-icon-gold.png" alt="" class="hub-logo-icon">
+        <span>Golden Makers</span>
+      </div>
+      <span class="hub-tagline">Makerspace · Golden, CO</span>
+    </header>
+
+    <div class="hub-titles">
+      <h1 class="hub-h1">What Is a Makerspace?</h1>
+      <p class="hub-sub">Tap any zone to explore</p>
+    </div>
+
+    <div class="venn-wrap">
+      <svg viewBox="-20 -32 640 682" xmlns="http://www.w3.org/2000/svg" aria-label="Venn diagram with three overlapping circles: Place, People, and Stuff, with overlap zones Share, Make, Learn, and Dream in the center">
+
+        <!-- Visual circles (screen blend mode via CSS) -->
+        <circle id="c-place"  class="vc" cx="300" cy="218" r="185" fill="#D4834A"/>
+        <circle id="c-people" class="vc" cx="183" cy="434" r="185" fill="#2E9BB8"/>
+        <circle id="c-stuff"  class="vc" cx="417" cy="434" r="185" fill="#4DB04B"/>
+
+        <!-- Outer label -->
+        <rect id="ms-border" class="ms-border" x="-12" y="-26" width="624" height="670" rx="22" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="1.5" stroke-dasharray="6 5"/>
+        <g class="makerspace-link" tabindex="0" role="link" aria-label="Ann's Story — what everything adds up to">
+          <rect x="-12" y="-26" width="624" height="42" rx="22" fill="rgba(0,0,0,0)"/>
+          <text class="ms-label" x="300" y="4" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="24" letter-spacing="10">MAKERSPACE</text>
+        </g>
+
+        <!-- PLACE zone -->
+        <g class="zone" id="z-place" data-view="place" data-circles="c-place" role="button" tabindex="0" aria-label="Explore Place">
+          <circle class="zone-hit" cx="300" cy="148" r="82"/>
+          <text class="zlm" x="300" y="140" text-anchor="middle" font-size="54">PLACE</text>
+          <text class="zls" x="300" y="166" text-anchor="middle" font-size="12.5">A workshop you don't have at home</text>
+        </g>
+
+        <!-- PEOPLE zone -->
+        <g class="zone" id="z-people" data-view="people" data-circles="c-people" role="button" tabindex="0" aria-label="Explore People">
+          <circle class="zone-hit" cx="137" cy="478" r="78"/>
+          <text class="zlm" x="137" y="470" text-anchor="middle" font-size="48">PEOPLE</text>
+          <text class="zls" x="137" y="494" text-anchor="middle" font-size="12">Makers, mentors &amp; neighbors</text>
+        </g>
+
+        <!-- STUFF zone -->
+        <g class="zone" id="z-stuff" data-view="stuff" data-circles="c-stuff" role="button" tabindex="0" aria-label="Explore Stuff">
+          <circle class="zone-hit" cx="463" cy="478" r="78"/>
+          <text class="zlm" x="463" y="470" text-anchor="middle" font-size="48">STUFF</text>
+          <text class="zls" x="463" y="494" text-anchor="middle" font-size="12">Tools, machines &amp; materials</text>
+        </g>
+
+        <!-- SHARE zone (Place + People) -->
+        <g class="zone" id="z-share" data-view="share" data-circles="c-place c-people" role="button" tabindex="0" aria-label="Explore Share">
+          <circle class="zone-hit" cx="216" cy="308" r="56"/>
+          <text class="zlo" x="216" y="307" text-anchor="middle" font-size="17">SHARE</text>
+          <text class="zls" x="216" y="325" text-anchor="middle" font-size="10.5">place + people</text>
+        </g>
+
+        <!-- MAKE zone (Place + Stuff) -->
+        <g class="zone" id="z-make" data-view="make" data-circles="c-place c-stuff" role="button" tabindex="0" aria-label="Explore Make">
+          <circle class="zone-hit" cx="384" cy="308" r="56"/>
+          <text class="zlo" x="384" y="307" text-anchor="middle" font-size="17">MAKE</text>
+          <text class="zls" x="384" y="325" text-anchor="middle" font-size="10.5">place + stuff</text>
+        </g>
+
+        <!-- LEARN zone (People + Stuff) -->
+        <g class="zone" id="z-learn" data-view="learn" data-circles="c-people c-stuff" role="button" tabindex="0" aria-label="Explore Learn">
+          <circle class="zone-hit" cx="300" cy="490" r="52"/>
+          <text class="zlo" x="300" y="489" text-anchor="middle" font-size="17">LEARN</text>
+          <text class="zls" x="300" y="507" text-anchor="middle" font-size="10.5">people + stuff</text>
+        </g>
+
+        <!-- DREAM zone (all three) -->
+        <g class="zone" id="z-dream" data-view="dream" data-circles="c-place c-people c-stuff" role="button" tabindex="0" aria-label="Explore Dream">
+          <circle class="zone-hit" cx="300" cy="358" r="50"/>
+          <rect x="251" y="339" width="98" height="36" rx="18" fill="rgba(10,22,30,.72)"/>
+          <text class="zlo" x="300" y="362" text-anchor="middle" font-size="20" style="fill:#F9B91A;letter-spacing:.18em">DREAM</text>
+        </g>
+
+      </svg>
+    </div>
+
+    <p class="hub-hint">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Click any zone to explore
+    </p>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PLACE VIEW
+     ═══════════════════════════════════════════════ -->
+<div id="view-place" class="view">
+  <nav class="dnav">
+    <button class="back-btn" onclick="navigate('hub')">
+      <i data-lucide="arrow-left" width="14" height="14"></i> Map
+    </button>
+    <img src="images/logo-full-teal.png" alt="Golden Makers" class="dnav-logo">
+  </nav>
+
+  <div class="dhero">
+    <p class="eyebrow" style="color:var(--mesa)">Place</p>
+    <h1 class="dh1">A Workshop You Don't Have at Home</h1>
+    <p class="dlead">Every maker needs a shop they can't build alone. Here's one vision.</p>
+  </div>
+  <p class="fp-aspiration">This is a concept, not a commitment. Golden Makers will be built around the people who show up — their skills, their tools, their dreams. Click any room to explore the idea.</p>
+
+  <div class="floorplan-wrap">
+    <svg viewBox="0 0 800 590" class="floorplan-svg" xmlns="http://www.w3.org/2000/svg"
+         role="img" aria-label="Concept floor plan — Golden Makers Makerspace, three zones">
+
+      <!-- ═══ BACKGROUND (parchment) ═══ -->
+      <rect width="800" height="590" fill="#F4EFE7"/>
+
+      <!-- ═══ ZONE FLOOR FILLS ═══ -->
+      <rect x="30" y="60" width="740" height="155" fill="rgba(192,122,58,0.13)"/>
+      <rect x="30" y="221" width="740" height="170" fill="rgba(78,122,53,0.10)"/>
+      <rect x="30" y="397" width="740" height="123" fill="rgba(61,143,163,0.10)"/>
+
+      <!-- ═══ ROOM CLICK TARGETS (transparent, hovered = subtle dark) ═══ -->
+      <!-- THE SHOP -->
+      <g class="fp-room" data-room="woodshop" role="button" tabindex="0" aria-label="Woodshop">
+        <rect class="fp-room-floor" x="30" y="60" width="265" height="155"/>
+        <text x="162" y="128" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="11" font-weight="700" letter-spacing="2.5" fill="#6B3818">WOODSHOP</text>
+        <text x="162" y="144" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#8A4A20" opacity=".65">saws · jointer · router</text>
+      </g>
+      <g class="fp-room" data-room="metal" role="button" tabindex="0" aria-label="Metal Shop">
+        <rect class="fp-room-floor" x="300" y="60" width="247" height="155"/>
+        <text x="423" y="128" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="11" font-weight="700" letter-spacing="2.5" fill="#6B3818">METAL SHOP</text>
+        <text x="423" y="144" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#8A4A20" opacity=".65">lathe · mill · grinder</text>
+      </g>
+      <g class="fp-room" data-room="welding" role="button" tabindex="0" aria-label="Welding Bay">
+        <rect class="fp-room-floor" x="552" y="60" width="218" height="155"/>
+        <text x="661" y="128" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="11" font-weight="700" letter-spacing="2.5" fill="#6B3818">WELDING BAY</text>
+        <text x="661" y="144" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#8A4A20" opacity=".65">MIG · TIG · plasma</text>
+      </g>
+      <!-- FAB LAB -->
+      <g class="fp-room" data-room="printing" role="button" tabindex="0" aria-label="3D Printing">
+        <rect class="fp-room-floor" x="30" y="221" width="185" height="170"/>
+        <text x="122" y="300" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#274E14">3D PRINTING</text>
+        <text x="122" y="316" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#274E14" opacity=".65">FDM · resin · filament</text>
+      </g>
+      <g class="fp-room" data-room="laser" role="button" tabindex="0" aria-label="Laser Engravers">
+        <rect class="fp-room-floor" x="220" y="221" width="187" height="170"/>
+        <text x="313" y="300" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#274E14">LASER ENGRAVERS</text>
+        <text x="313" y="316" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#274E14" opacity=".65">etch · cut · vinyl</text>
+      </g>
+      <g class="fp-room" data-room="electronics" role="button" tabindex="0" aria-label="Electronics Bench">
+        <rect class="fp-room-floor" x="412" y="221" width="187" height="170"/>
+        <text x="505" y="300" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#274E14">ELECTRONICS</text>
+        <text x="505" y="316" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#274E14" opacity=".65">solder · scope · PCB</text>
+      </g>
+      <g class="fp-room" data-room="textiles" role="button" tabindex="0" aria-label="Soft Goods">
+        <rect class="fp-room-floor" x="604" y="221" width="166" height="170"/>
+        <text x="687" y="300" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#274E14">SOFT GOODS</text>
+        <text x="687" y="316" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#274E14" opacity=".65">sew · embroider · cut</text>
+      </g>
+      <!-- COMMONS -->
+      <g class="fp-room" data-room="cowork" role="button" tabindex="0" aria-label="Coworking">
+        <rect class="fp-room-floor" x="30" y="397" width="226" height="123"/>
+        <text x="143" y="452" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#0E3A4A">COWORKING</text>
+        <text x="143" y="468" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#0E3A4A" opacity=".65">hot-desks · wifi</text>
+      </g>
+      <g class="fp-room" data-room="welcome" role="button" tabindex="0" aria-label="Welcome">
+        <rect class="fp-room-floor" x="261" y="397" width="186" height="123"/>
+        <text x="354" y="452" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#0E3A4A">WELCOME</text>
+        <text x="354" y="468" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#0E3A4A" opacity=".65">sign-in · tours · lending</text>
+      </g>
+      <g class="fp-room" data-room="classroom" role="button" tabindex="0" aria-label="Classroom">
+        <rect class="fp-room-floor" x="452" y="397" width="180" height="123"/>
+        <text x="542" y="452" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#0E3A4A">CLASSROOM</text>
+        <text x="542" y="468" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#0E3A4A" opacity=".65">20-seat · projector · AV</text>
+      </g>
+      <g class="fp-room" data-room="kitchen" role="button" tabindex="0" aria-label="Kitchen">
+        <rect class="fp-room-floor" x="637" y="397" width="133" height="123"/>
+        <text x="703" y="452" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#0E3A4A">KITCHEN</text>
+        <text x="703" y="468" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#0E3A4A" opacity=".65">coffee · fridge</text>
+      </g>
+
+      <!-- ═══ WALLS (drawn on top of rooms) ═══ -->
+      <!-- Exterior: top -->
+      <rect x="20" y="50" width="760" height="10" fill="#2C2015"/>
+      <!-- Exterior: bottom -->
+      <rect x="20" y="520" width="760" height="10" fill="#2C2015"/>
+      <!-- Exterior: left & right -->
+      <rect x="20" y="50" width="10" height="480" fill="#2C2015"/>
+      <rect x="770" y="50" width="10" height="480" fill="#2C2015"/>
+
+      <!-- Zone divider: Shop / Fab Lab -->
+      <rect x="30" y="215" width="740" height="6" fill="#2C2015"/>
+      <!-- Zone divider: Fab Lab / Commons -->
+      <rect x="30" y="391" width="740" height="6" fill="#2C2015"/>
+
+      <!-- Room partitions: THE SHOP -->
+      <rect x="295" y="60" width="5" height="155" fill="#3D2E1E"/>
+      <rect x="547" y="60" width="5" height="155" fill="#3D2E1E"/>
+      <!-- Room partitions: FAB LAB (dashed = open plan) -->
+      <line x1="217" y1="223" x2="217" y2="389" stroke="#3D2E1E" stroke-width="1.5" stroke-dasharray="8,5" opacity=".45"/>
+      <line x1="409" y1="223" x2="409" y2="389" stroke="#3D2E1E" stroke-width="1.5" stroke-dasharray="8,5" opacity=".45"/>
+      <line x1="601" y1="223" x2="601" y2="389" stroke="#3D2E1E" stroke-width="1.5" stroke-dasharray="8,5" opacity=".45"/>
+      <!-- Room partitions: COMMONS -->
+      <rect x="256" y="397" width="5" height="123" fill="#3D2E1E"/>
+      <rect x="447" y="397" width="5" height="123" fill="#3D2E1E"/>
+      <rect x="632" y="397" width="5" height="123" fill="#3D2E1E"/>
+
+
+      <!-- ═══ ZONE ANNOTATION LABELS ═══ -->
+      <text x="38" y="76" font-family="'DM Sans',sans-serif" font-size="8.5" font-weight="800" letter-spacing="3" fill="#C07A3A">THE SHOP</text>
+      <text x="38" y="88" font-family="'DM Sans',sans-serif" font-size="7.5" fill="#C07A3A" opacity=".6">PPE required · ventilated</text>
+      <text x="38" y="236" font-family="'DM Sans',sans-serif" font-size="8.5" font-weight="800" letter-spacing="3" fill="#3A6228">FAB LAB</text>
+      <text x="38" y="248" font-family="'DM Sans',sans-serif" font-size="7.5" fill="#3A6228" opacity=".6">filtered air · digital fab</text>
+      <text x="38" y="413" font-family="'DM Sans',sans-serif" font-size="8.5" font-weight="800" letter-spacing="3" fill="#1B5C72">COMMONS</text>
+      <text x="38" y="425" font-family="'DM Sans',sans-serif" font-size="7.5" fill="#1B5C72" opacity=".6">open to all · no PPE</text>
+
+      <!-- ═══ NORTH ARROW ═══ -->
+      <g transform="translate(755,30)">
+        <line x1="0" y1="12" x2="0" y2="-12" stroke="#2C2015" stroke-width="1.5"/>
+        <polygon points="0,-12 -4,-2 4,-2" fill="#2C2015"/>
+        <text x="0" y="22" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9" font-weight="700" fill="#2C2015">N</text>
+      </g>
+
+      <!-- ═══ TITLE BLOCK ═══ -->
+      <line x1="20" y1="540" x2="780" y2="540" stroke="#2C2015" stroke-width="0.5" opacity=".35"/>
+      <text x="22" y="558" font-family="'DM Sans',sans-serif" font-size="10" font-weight="700" letter-spacing="2" fill="#2C2015">GOLDEN MAKERS MAKERSPACE</text>
+      <rect x="308" y="544" width="184" height="18" rx="1" fill="none" stroke="#C07A3A" stroke-width="1"/>
+      <text x="400" y="557" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" font-weight="800" letter-spacing="2.5" fill="#C07A3A">CONCEPT PLAN</text>
+      <text x="778" y="555" text-anchor="end" font-family="'DM Sans',sans-serif" font-size="9" fill="#6B6259">Golden, CO</text>
+      <text x="778" y="569" text-anchor="end" font-family="'DM Sans',sans-serif" font-size="7.5" fill="#6B6259" opacity=".7">Not to scale · Subject to community input</text>
+
+    </svg>
+  </div>
+
+  <div class="dbody" style="padding-top:0">
+    <div class="related">
+      <span class="related-label">Explore →</span>
+      <button class="rzone-btn" style="--link-color: var(--creek)" onclick="navigate('share')">Share: Place + People</button>
+      <button class="rzone-btn" style="--link-color: var(--foothills)" onclick="navigate('make')">Make: Place + Stuff</button>
+      <button class="rzone-btn" style="--link-color: var(--golden-d)" onclick="navigate('dream')">Dream: All Three</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PEOPLE VIEW
+     ═══════════════════════════════════════════════ -->
+<div id="view-people" class="view">
+  <nav class="dnav">
+    <button class="back-btn" onclick="navigate('hub')">
+      <i data-lucide="arrow-left" width="14" height="14"></i> Map
+    </button>
+    <img src="images/logo-full-teal.png" alt="Golden Makers" class="dnav-logo">
+  </nav>
+
+  <div class="dhero">
+    <p class="eyebrow" style="color:var(--teal)">People</p>
+    <h1 class="dh1">The Makers of Golden</h1>
+    <p class="dlead">Every person who walks in brings something different. Jump to a persona or scroll through all six.</p>
+  </div>
+
+  <!-- ── Navigation tiles ── -->
+  <div class="persona-nav-wrap">
+    <div class="persona-tiles">
+      <a href="#persona-01" class="ptile" style="--accent:#A8461A">
+        <span class="ptile-num">01</span>
+        <span class="ptile-name">The Entrepreneur</span>
+        <span class="ptile-hint">Prototype &amp; sell</span>
+      </a>
+      <a href="#persona-02" class="ptile" style="--accent:#2F6F8F">
+        <span class="ptile-num">02</span>
+        <span class="ptile-name">The Career Changer</span>
+        <span class="ptile-hint">New skills, new path</span>
+      </a>
+      <a href="#persona-03" class="ptile" style="--accent:#3F6A3C">
+        <span class="ptile-num">03</span>
+        <span class="ptile-name">The Tinkerer</span>
+        <span class="ptile-hint">Fix it, build it</span>
+      </a>
+      <a href="#persona-04" class="ptile" style="--accent:#8A6210">
+        <span class="ptile-num">04</span>
+        <span class="ptile-name">The Lifelong Learner</span>
+        <span class="ptile-hint">Curious hands</span>
+      </a>
+      <a href="#persona-05" class="ptile" style="--accent:#6B4C8A">
+        <span class="ptile-num">05</span>
+        <span class="ptile-name">The Creative</span>
+        <span class="ptile-hint">Tools &amp; space</span>
+      </a>
+      <a href="#persona-06" class="ptile" style="--accent:#9A3D5C">
+        <span class="ptile-num">06</span>
+        <span class="ptile-name">The Mentor</span>
+        <span class="ptile-hint">Pass it on</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Persona 01: The Entrepreneur ── -->
+  <div class="persona-section" id="persona-01" style="--accent:#A8461A">
+    <div class="persona-row">
+      <div>
+        <span class="persona-eyebrow" style="color:#A8461A">Persona 01</span>
+        <h2 class="persona-title">The Entrepreneur</h2>
+        <p class="persona-quote">"I have an idea, or a craft, and I want to turn it into something I sell."</p>
+        <p class="needs-label">What they need</p>
+        <ul class="persona-list">
+          <li>Prototyping tools &amp; studio space</li>
+          <li>Business mentors who've done it</li>
+          <li>Photography setup for product shots</li>
+        </ul>
+      </div>
+      <div class="persona-panel" style="background: linear-gradient(145deg, #E06030 0%, #8A3010 100%)">
+        <img src="images/photo-golden-arch.jpeg" class="panel-bg-img" alt="">
+        <span class="panel-word">MAKE</span>
+        <span class="panel-num">01</span>
+      </div>
+    </div>
+    <div class="persona-stories">
+      <p class="stories-eyebrow">Real people, real outcomes</p>
+      <div class="stories-grid">
+        <div class="story-card">
+          <div class="story-name">Greg Aldred</div>
+          <div class="story-loc">Inventor · St. George, UT</div>
+          <p class="story-text">At 69, he turned a sardine-can-lid prototype into a fishing gadget after a 3D-printing class at his local makerspace, then found a manufacturer and placed top five in a regional business challenge.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Heather Mullins</div>
+          <div class="story-loc">Après Ski Jewelry · Golden, CO</div>
+          <p class="story-text">She cuts retired skis into earrings, key chains, coasters and furniture, sold wholesale across Colorado ski towns.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Shan Wo</div>
+          <div class="story-loc">Reroot Outdoors · Boulder, CO</div>
+          <p class="story-text">A "recovering engineer" who sews custom bike bags ($70–$300) for Reroot Outdoors, all made at Phoenix Asylum, a Boulder makerspace.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Square</div>
+          <div class="story-loc">Startup · TechShop, California</div>
+          <p class="story-text">Co-founder Jim McKelvey built the first prototypes of Square's card reader at a makerspace. The same tools available to any member.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Persona 02: The Career Changer ── -->
+  <div class="persona-section alt" id="persona-02" style="--accent:#2F6F8F">
+    <div class="persona-row">
+      <div class="persona-panel" style="background: linear-gradient(145deg, #3D8FA3 0%, #1B5C72 100%)">
+        <img src="images/photo-school-of-mines.webp" class="panel-bg-img" alt="">
+        <span class="panel-word">LEARN</span>
+        <span class="panel-num">02</span>
+      </div>
+      <div>
+        <span class="persona-eyebrow" style="color:#2F6F8F">Persona 02</span>
+        <h2 class="persona-title">The Career Changer</h2>
+        <p class="persona-quote">"I want hands-on skills for a different kind of work."</p>
+        <p class="needs-label">What they need</p>
+        <ul class="persona-list">
+          <li>Structured training with credentials</li>
+          <li>Time to practice at their own pace</li>
+          <li>Connections to employers &amp; gigs</li>
+        </ul>
+      </div>
+    </div>
+    <div class="persona-stories">
+      <p class="stories-eyebrow">Real people, real outcomes</p>
+      <div class="stories-grid">
+        <div class="story-card">
+          <div class="story-name">Gibbs</div>
+          <div class="story-loc">Knox Makers · Knoxville, TN</div>
+          <p class="story-text">Started by building his deck and van bed frames, then quit his desk job, went to welding school and became head fabricator on a construction crew.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">John Block</div>
+          <div class="story-loc">FUSE Makerspace · Albuquerque, NM</div>
+          <p class="story-text">A retiring racecar engineer who learned plasma cutting and TIG welding, then launched his own business: Pop's Prototype Shop.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Lawrence</div>
+          <div class="story-loc">Open Works · Baltimore, MD</div>
+          <p class="story-text">An elementary teacher who learned woodworking through tool-library classes, trained on the CNC router and went into business with a fellow member.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Veterans at TechShop</div>
+          <div class="story-loc">VA Center for Innovation · nationwide</div>
+          <p class="story-text">The VA offered 2,000 one-year memberships so veterans could build job skills or pursue a business — a shop as a bridge to the next chapter.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Persona 03: The Tinkerer & Fixer ── -->
+  <div class="persona-section" id="persona-03" style="--accent:#3F6A3C">
+    <div class="persona-row">
+      <div>
+        <span class="persona-eyebrow" style="color:#3F6A3C">Persona 03</span>
+        <h2 class="persona-title">The Tinkerer &amp; Fixer</h2>
+        <p class="persona-quote">"If it's broken, or doesn't exist yet, I'll figure out how to make it."</p>
+        <p class="needs-label">What they need</p>
+        <ul class="persona-list">
+          <li>Shared tools &amp; open-shop hours</li>
+          <li>A knowledgeable crowd to bounce off</li>
+          <li>Parts, materials, salvage</li>
+        </ul>
+      </div>
+      <div class="persona-panel" style="background: linear-gradient(145deg, #7EAC5E 0%, #3A6228 100%)">
+        <img src="images/photo-downtown-night.avif" class="panel-bg-img" alt="">
+        <span class="panel-word">FIX</span>
+        <span class="panel-num">03</span>
+      </div>
+    </div>
+    <div class="persona-stories">
+      <p class="stories-eyebrow">Real people, real outcomes</p>
+      <div class="stories-grid">
+        <div class="story-card">
+          <div class="story-name">Repair Cafés</div>
+          <div class="story-loc">TinkerMill · Longmont, CO</div>
+          <p class="story-text">Volunteers fix bikes, appliances, electronics and clothing alongside their owners. Across Repair Cafés, roughly 70% of items get repaired.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">The Dennison Family</div>
+          <div class="story-loc">Cincinnati, OH · with e-NABLE</div>
+          <p class="story-text">Parents who 3D printed prosthetic hands for their 8-year-old son. Commercial hands can top $10,000; printed ones can cost under $50 in materials.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Make4Covid</div>
+          <div class="story-loc">Statewide, Colorado · 2020</div>
+          <p class="story-text">2,100+ volunteer makers delivered 30,000+ face shields to hospitals. Mines students printed parts, some in the campus makerspace — tinkerers as first responders.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Persona 04: The Lifelong Learner ── -->
+  <div class="persona-section alt" id="persona-04" style="--accent:#8A6210">
+    <div class="persona-row">
+      <div class="persona-panel" style="background: linear-gradient(145deg, #E4AA72 0%, #8A6210 100%)">
+        <img src="images/photo-galbraith-mountain.jpg" class="panel-bg-img" alt="">
+        <span class="panel-word">GROW</span>
+        <span class="panel-num">04</span>
+      </div>
+      <div>
+        <span class="persona-eyebrow" style="color:#8A6210">Persona 04</span>
+        <h2 class="persona-title">The Lifelong Learner</h2>
+        <p class="persona-quote">"I want to learn something new with my hands, and with other people."</p>
+        <p class="needs-label">What they need</p>
+        <ul class="persona-list">
+          <li>Beginner-friendly classes</li>
+          <li>Social, welcoming atmosphere</li>
+          <li>Patient mentoring, no judgment</li>
+        </ul>
+      </div>
+    </div>
+    <div class="persona-stories">
+      <p class="stories-eyebrow">Real people, real outcomes</p>
+      <div class="stories-grid">
+        <div class="story-card">
+          <div class="story-name">Adaline Hamlin</div>
+          <div class="story-loc">Student, age 15 · Hendersonville, TN</div>
+          <p class="story-text">Designed a lunch tray for students with special needs, prototyped it for under $5 with her school's 3D-printing club, won a state STEM award and shared the files free.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Men's Sheds</div>
+          <div class="story-loc">Community workshops · worldwide</div>
+          <p class="story-text">A study of one shed in British Columbia found it gave retirees structure, purpose and social connection — the same things a good makerspace does.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Veterans in Recovery</div>
+          <div class="story-loc">Nebraska Innovation Studio · Lincoln</div>
+          <p class="story-text">Veterans learn to turn pens on wood lathes. About 227 have joined since 2018, with measurable gains in well-being and social support.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Two middle-school teachers</div>
+          <div class="story-loc">Burlington, MA</div>
+          <p class="story-text">Learned to 3D print a prosthetic hand for a 7-year-old through the e-NABLE network. Neither had prior fabrication experience.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Persona 05: The Creative ── -->
+  <div class="persona-section" id="persona-05" style="--accent:#6B4C8A">
+    <div class="persona-row">
+      <div>
+        <span class="persona-eyebrow" style="color:#6B4C8A">Persona 05</span>
+        <h2 class="persona-title">The Creative</h2>
+        <p class="persona-quote">"I already know how. I just need the tools and the room."</p>
+        <p class="needs-label">What they need</p>
+        <ul class="persona-list">
+          <li>Large equipment &amp; dedicated space</li>
+          <li>WIP storage between sessions</li>
+          <li>Fellow makers who get it</li>
+        </ul>
+      </div>
+      <div class="persona-panel" style="background: linear-gradient(145deg, #9B6DC0 0%, #5A3080 100%)">
+        <img src="images/photo-foothills-trail.webp" class="panel-bg-img" alt="">
+        <span class="panel-word">CREATE</span>
+        <span class="panel-num">05</span>
+      </div>
+    </div>
+    <div class="persona-stories">
+      <p class="stories-eyebrow">Real people, real outcomes</p>
+      <div class="stories-grid">
+        <div class="story-card">
+          <div class="story-name">Michelle Medina</div>
+          <div class="story-loc">My Own 2 Hands · Littleton, CO</div>
+          <p class="story-text">An artist who lives in an apartment and can't do projects at home. After years of borrowing and renting tools, she made the shop her go-to place for projects.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Lee Moroz</div>
+          <div class="story-loc">My Own 2 Hands · Littleton, CO</div>
+          <p class="story-text">Used to pull his cars out of the garage to make room to work. He compares a shop membership to a gym: access to tools that would cost ten times as much to own.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Czarnik</div>
+          <div class="story-loc">Kzoo Makers · Kalamazoo, MI</div>
+          <p class="story-text">Burns maps and polygonal globes into wood on the makerspace laser. "Since I can't fit a table saw in my apartment, this just makes sense."</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Members Workshop</div>
+          <div class="story-loc">Madison, WI</div>
+          <p class="story-text">One member spent months building a rocking horse for his son; another makes xylophones from scratch. The shop provides what no home workshop could.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Persona 06: The Mentor ── -->
+  <div class="persona-section alt" id="persona-06" style="--accent:#9A3D5C">
+    <div class="persona-row">
+      <div class="persona-panel" style="background: linear-gradient(145deg, #C0607A 0%, #8A2545 100%)">
+        <img src="images/photo-downtown-fish-bridge.jpg" class="panel-bg-img" alt="">
+        <span class="panel-word">SHARE</span>
+        <span class="panel-num">06</span>
+      </div>
+      <div>
+        <span class="persona-eyebrow" style="color:#9A3D5C">Persona 06</span>
+        <h2 class="persona-title">The Mentor</h2>
+        <p class="persona-quote">"I know how to do this, and I want to pass it on."</p>
+        <p class="needs-label">What they need</p>
+        <ul class="persona-list">
+          <li>Easy ways to run a class or demo</li>
+          <li>Real role with recognition</li>
+          <li>Community that values their time</li>
+        </ul>
+      </div>
+    </div>
+    <div class="persona-stories">
+      <p class="stories-eyebrow">Real people, real outcomes</p>
+      <div class="stories-grid">
+        <div class="story-card">
+          <div class="story-name">Rae</div>
+          <div class="story-loc">TinkerMill · Longmont, CO</div>
+          <p class="story-text">Toured TinkerMill after moving back to Colorado and joined almost immediately. She now captains the pottery studio as a volunteer and instructor.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Wayne Seltzer</div>
+          <div class="story-loc">Boulder U-Fix-It Clinic · Boulder, CO</div>
+          <p class="story-text">Founded and manages the clinic since 2013, recruiting volunteer "fixit coaches" and partnering with the Boulder library's BLDG 61 makerspace.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Andrew Bittner</div>
+          <div class="story-loc">Dallas Makerspace · Dallas, TX</div>
+          <p class="story-text">Twenty years as a machinist, toolmaker and welder, he joined the makerspace wanting to teach. Its machine-shop classes are taught by members like him.</p>
+        </div>
+        <div class="story-card">
+          <div class="story-name">Monumental Impact</div>
+          <div class="story-loc">Palmer Lake, CO</div>
+          <p class="story-text">A volunteer-led 501(c)(3) for technology, engineering and entrepreneurship. Mentors staff open hours and run programs in their own community.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dbody">
+    <div class="related">
+      <span class="related-label">Explore →</span>
+      <button class="rzone-btn" style="--link-color: var(--creek)" onclick="navigate('share')">Share: Place + People</button>
+      <button class="rzone-btn" style="--link-color: var(--teal-l)" onclick="navigate('learn')">Learn: People + Stuff</button>
+      <button class="rzone-btn" style="--link-color: var(--golden-d)" onclick="navigate('dream')">Dream: All Three</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     STUFF VIEW
+     ═══════════════════════════════════════════════ -->
+<div id="view-stuff" class="view">
+  <nav class="dnav">
+    <button class="back-btn" onclick="navigate('hub')">
+      <i data-lucide="arrow-left" width="14" height="14"></i> Map
+    </button>
+    <img src="images/logo-full-teal.png" alt="Golden Makers" class="dnav-logo">
+  </nav>
+
+  <div class="dhero">
+    <p class="eyebrow" style="color:var(--foothills)">Stuff</p>
+    <h1 class="dh1">The Tools That Make It Possible</h1>
+    <p class="dlead">A shared tool library that no single maker could own alone — and one that keeps growing.</p>
+  </div>
+
+  <div class="dbody">
+    <div class="stuff-origin">
+      <strong>It starts with donations.</strong> The first tools walk through the door in members' hands — a router here, a drill press there. As the community grows, members vote on what to add next: a 3D printer, a laser engraver, a welder. Every new phase of equipment is a collective decision.
+    </div>
+
+    <div class="stuff-cats">
+      <!-- Tools -->
+      <div class="stuff-cat" style="background: linear-gradient(145deg, #C87040 0%, #8A3A18 100%)"
+           data-cat="tools" role="button" tabindex="0" aria-label="Tools — tap for details">
+        <img src="https://clearcreekmakerspace.com/wp-content/uploads/2024/09/IMG_2363-1024x768.jpg"
+             class="stuff-cat-bg" alt="">
+        <span class="stuff-cat-tag">Hand &amp; Power</span>
+        <div class="stuff-cat-word">TOOLS</div>
+        <div class="stuff-cat-sub">The ones you need occasionally, not permanently</div>
+        <span class="stuff-cat-num">01</span>
+      </div>
+
+      <!-- Machines -->
+      <div class="stuff-cat" style="background: linear-gradient(145deg, #4A8A38 0%, #26521A 100%)"
+           data-cat="machines" role="button" tabindex="0" aria-label="Machines — tap for details">
+        <img src="https://clearcreekmakerspace.com/wp-content/uploads/2024/09/IMG_2357-1024x768.jpg"
+             class="stuff-cat-bg" alt="">
+        <span class="stuff-cat-tag">Industrial Scale</span>
+        <div class="stuff-cat-word">MACHINES</div>
+        <div class="stuff-cat-sub">Too expensive, too big, too loud for home</div>
+        <span class="stuff-cat-num">02</span>
+      </div>
+
+      <!-- Consumables -->
+      <div class="stuff-cat" style="background: linear-gradient(145deg, #3A9AB8 0%, #195872 100%)"
+           data-cat="consumables" role="button" tabindex="0" aria-label="Consumables — tap for details">
+        <img src="https://clearcreekmakerspace.com/wp-content/uploads/2024/09/IMG_2336-scaled.jpg"
+             class="stuff-cat-bg" alt="">
+        <span class="stuff-cat-tag">Materials &amp; Supplies</span>
+        <div class="stuff-cat-word">MATERIALS</div>
+        <div class="stuff-cat-sub">Wood, filament, fabric, wire — stocked and ready</div>
+        <span class="stuff-cat-num">03</span>
+      </div>
+    </div>
+
+    <div class="related">
+      <span class="related-label">Explore →</span>
+      <button class="rzone-btn" style="--link-color: var(--foothills)" onclick="navigate('make')">Make: Place + Stuff</button>
+      <button class="rzone-btn" style="--link-color: var(--teal-l)" onclick="navigate('learn')">Learn: People + Stuff</button>
+      <button class="rzone-btn" style="--link-color: var(--golden-d)" onclick="navigate('dream')">Dream: All Three</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     DREAM VIEW
+     ═══════════════════════════════════════════════ -->
+<div id="view-dream" class="view dream-view">
+  <nav class="dnav">
+    <button class="back-btn" onclick="navigate('hub')">
+      <i data-lucide="arrow-left" width="14" height="14"></i> Map
+    </button>
+    <img src="images/logo-full-teal.png" alt="Golden Makers" class="dnav-logo">
+  </nav>
+
+  <div class="dhero">
+    <p class="eyebrow">Dream</p>
+    <h1 class="dh1">Anything You Can Imagine</h1>
+    <p class="dlead">When Place, People, and Stuff come together, the only limit is what you can dream up. This is what Golden makes possible.</p>
+  </div>
+
+  <div class="dbody">
+    <div class="bquote" style="--accent: var(--golden)">
+      <p>She brought one sketch on her phone. She left three hours later with a prototype, two new friends, and ten more ideas she hadn't had before she walked in.</p>
+      <cite>Ann's story — the seed of Golden Makerspace</cite>
+    </div>
+
+    <p class="section-label">What dream looks like</p>
+    <div class="igrid">
+      <div class="icard" style="--accent: var(--golden)">
+        <div class="icard-title">Start With a Sketch</div>
+        <div class="icard-body">A napkin idea, a phone photo, a rough concept. That is enough to begin.</div>
+      </div>
+      <div class="icard" style="--accent: var(--golden)">
+        <div class="icard-title">Prototype Fast</div>
+        <div class="icard-body">3D print it today. Laser cut it tomorrow. Iterate until it works.</div>
+      </div>
+      <div class="icard" style="--accent: var(--golden)">
+        <div class="icard-title">Learn as You Go</div>
+        <div class="icard-body">The right person is always nearby. Every missing skill is a question away.</div>
+      </div>
+      <div class="icard" style="--accent: var(--golden)">
+        <div class="icard-title">Ship Something Real</div>
+        <div class="icard-body">Sell it, gift it, donate it, exhibit it. The makerspace is the launch pad.</div>
+      </div>
+    </div>
+
+    <div class="related">
+      <span class="related-label">What feeds it →</span>
+      <button class="rzone-btn" style="--link-color: var(--mesa-l)" onclick="navigate('place')">Place</button>
+      <button class="rzone-btn" style="--link-color: var(--teal-l)" onclick="navigate('people')">People</button>
+      <button class="rzone-btn" style="--link-color: var(--foothills-l)" onclick="navigate('stuff')">Stuff</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MAKE VIEW
+     ═══════════════════════════════════════════════ -->
+<div id="view-make" class="view">
+  <nav class="dnav">
+    <button class="back-btn" onclick="navigate('hub')">
+      <i data-lucide="arrow-left" width="14" height="14"></i> Map
+    </button>
+    <img src="images/logo-full-teal.png" alt="Golden Makers" class="dnav-logo">
+  </nav>
+
+  <div class="dhero">
+    <p class="eyebrow" style="color:#7E7030">Make</p>
+    <h1 class="dh1">Room to Try, and Try Again</h1>
+    <p class="dlead">Place plus Stuff: when the right tools live in a space built for making, the whole process changes — you stop planning and start building.</p>
+  </div>
+
+  <div class="dbody">
+    <div class="bquote" style="--accent: #A08020">
+      <p>The first version never works. That's not failure — that's iteration. And a makerspace is designed for iteration.</p>
+    </div>
+
+    <p class="section-label">What making looks like here</p>
+    <div class="igrid">
+      <div class="icard" style="--accent: #9A8020">
+        <div class="icard-title">Prototype in an Afternoon</div>
+        <div class="icard-body">Walk in with a concept. Walk out with something you can hold. The tools are there; so is the time.</div>
+      </div>
+      <div class="icard" style="--accent: #9A8020">
+        <div class="icard-title">Fail Cheap, Fail Fast</div>
+        <div class="icard-body">PLA is cheap. Plywood is cheap. Breaking a prototype in the shop is infinitely cheaper than a production run.</div>
+      </div>
+      <div class="icard" style="--accent: #9A8020">
+        <div class="icard-title">Work at Scale</div>
+        <div class="icard-body">The 4×8 CNC table, the kiln, the full-size table saw — things you simply can't have at home.</div>
+      </div>
+      <div class="icard" style="--accent: #9A8020">
+        <div class="icard-title">Leave It Better</div>
+        <div class="icard-body">Clean the machine, hang the tool. Making culture is built on mutual respect for the shared space.</div>
+      </div>
+    </div>
+
+    <div class="related">
+      <span class="related-label">Explore →</span>
+      <button class="rzone-btn" style="--link-color: var(--mesa)" onclick="navigate('place')">Place</button>
+      <button class="rzone-btn" style="--link-color: var(--foothills)" onclick="navigate('stuff')">Stuff</button>
+      <button class="rzone-btn" style="--link-color: var(--golden-d)" onclick="navigate('dream')">Dream: All Three</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SHARE VIEW
+     ═══════════════════════════════════════════════ -->
+<div id="view-share" class="view">
+  <nav class="dnav">
+    <button class="back-btn" onclick="navigate('hub')">
+      <i data-lucide="arrow-left" width="14" height="14"></i> Map
+    </button>
+    <img src="images/logo-full-teal.png" alt="Golden Makers" class="dnav-logo">
+  </nav>
+
+  <div class="dhero">
+    <p class="eyebrow" style="color:var(--creek)">Share</p>
+    <h1 class="dh1">Skills Pass from Maker to Maker</h1>
+    <p class="dlead">Place plus People: when a community gathers in one space, every piece of knowledge becomes available to everyone in the room.</p>
+  </div>
+
+  <div class="dbody">
+    <div class="bquote" style="--accent: var(--creek)">
+      <p>The person next to you just finished a joinery class. The one across the aisle has been soldering for 20 years. You didn't know either of them an hour ago.</p>
+    </div>
+
+    <p class="section-label">How sharing happens</p>
+    <div class="igrid">
+      <div class="icard" style="--accent: var(--creek)">
+        <div class="icard-title">Open Shop Nights</div>
+        <div class="icard-body">Drop in, work on whatever you're working on, and inevitably answer two questions and ask three more.</div>
+      </div>
+      <div class="icard" style="--accent: var(--creek)">
+        <div class="icard-title">Member-Led Classes</div>
+        <div class="icard-body">The experts in the room teach the beginners. Everyone gets to be both, depending on the day.</div>
+      </div>
+      <div class="icard" style="--accent: var(--creek)">
+        <div class="icard-title">Apprenticeship</div>
+        <div class="icard-body">A mentor and a learner, side by side, working on a real project together. No curriculum. Just doing it.</div>
+      </div>
+      <div class="icard" style="--accent: var(--creek)">
+        <div class="icard-title">Show &amp; Tell</div>
+        <div class="icard-body">Bring what you made. Tell us how. Inspiration spreads faster than any curriculum could teach.</div>
+      </div>
+    </div>
+
+    <div class="related">
+      <span class="related-label">Explore →</span>
+      <button class="rzone-btn" style="--link-color: var(--mesa)" onclick="navigate('place')">Place</button>
+      <button class="rzone-btn" style="--link-color: var(--teal)" onclick="navigate('people')">People</button>
+      <button class="rzone-btn" style="--link-color: var(--golden-d)" onclick="navigate('dream')">Dream: All Three</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     LEARN VIEW
+     ═══════════════════════════════════════════════ -->
+<div id="view-learn" class="view">
+  <nav class="dnav">
+    <button class="back-btn" onclick="navigate('hub')">
+      <i data-lucide="arrow-left" width="14" height="14"></i> Map
+    </button>
+    <img src="images/logo-full-teal.png" alt="Golden Makers" class="dnav-logo">
+  </nav>
+
+  <div class="dhero">
+    <p class="eyebrow" style="color:var(--teal-l)">Learn</p>
+    <h1 class="dh1">A Missing Skill Isn't a Dead End</h1>
+    <p class="dlead">People plus Stuff: hands-on knowledge, right when you need it. The makerspace is a living classroom where the subject is whatever you're making.</p>
+  </div>
+
+  <div class="dbody">
+    <div class="bquote" style="--accent: var(--teal-l)">
+      <p>She'd never touched a router. By the end of her second visit she was explaining runout to someone who'd just walked in.</p>
+    </div>
+
+    <p class="section-label">How learning happens</p>
+    <div class="igrid">
+      <div class="icard" style="--accent: var(--teal-l)">
+        <div class="icard-title">Just-in-Time</div>
+        <div class="icard-body">You learn the technique when the project demands it — not from a syllabus, but from necessity.</div>
+      </div>
+      <div class="icard" style="--accent: var(--teal-l)">
+        <div class="icard-title">Hands On First</div>
+        <div class="icard-body">Twenty minutes at the machine teaches more than two hours of watching video. Touch things. Break things. Fix them.</div>
+      </div>
+      <div class="icard" style="--accent: var(--teal-l)">
+        <div class="icard-title">Peer Teaching</div>
+        <div class="icard-body">The person who learned it last month explains it best — they still remember what it felt like not to know.</div>
+      </div>
+      <div class="icard" style="--accent: var(--teal-l)">
+        <div class="icard-title">Certifications</div>
+        <div class="icard-body">Formal training pathways for the tools that need them: welding, CNC, the laser. Skills that transfer beyond the shop.</div>
+      </div>
+    </div>
+
+    <div class="related">
+      <span class="related-label">Explore →</span>
+      <button class="rzone-btn" style="--link-color: var(--teal)" onclick="navigate('people')">People</button>
+      <button class="rzone-btn" style="--link-color: var(--foothills)" onclick="navigate('stuff')">Stuff</button>
+      <button class="rzone-btn" style="--link-color: var(--golden-d)" onclick="navigate('dream')">Dream: All Three</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  /* ── View navigation ── */
+  function navigate(to) {
+    const current = document.querySelector('.view.active');
+    if (current) current.classList.remove('active');
+    const next = document.getElementById('view-' + to);
+    if (!next) return;
+    next.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (to !== 'hub') location.hash = to;
+    else history.pushState(null, '', ' ');
+  }
+  window.navigate = navigate;
+
+  /* ── Hover sound ── */
+  var _audioCtx = null;
+  function playHover() {
+    try {
+      if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (_audioCtx.state === 'suspended') _audioCtx.resume();
+      var osc = _audioCtx.createOscillator();
+      var gain = _audioCtx.createGain();
+      osc.connect(gain); gain.connect(_audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(660, _audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(440, _audioCtx.currentTime + 0.06);
+      gain.gain.setValueAtTime(0, _audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.07, _audioCtx.currentTime + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, _audioCtx.currentTime + 0.09);
+      osc.start(_audioCtx.currentTime);
+      osc.stop(_audioCtx.currentTime + 0.12);
+    } catch(e) {}
+  }
+
+  /* ── Venn hover ── */
+  document.querySelectorAll('.zone').forEach(function(zone) {
+    var ids = (zone.dataset.circles || '').split(' ').filter(Boolean);
+    var circles = ids.map(function(id) { return document.getElementById(id); });
+
+    function on() { circles.forEach(function(c) { if(c) c.classList.add('lit'); }); }
+    function off() { circles.forEach(function(c) { if(c) c.classList.remove('lit'); }); }
+
+    zone.addEventListener('mouseenter', function() { on(); playHover(); });
+    zone.addEventListener('mouseleave', off);
+    zone.addEventListener('click', function() { navigate(zone.dataset.view); });
+    zone.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(zone.dataset.view); }
+    });
+    zone.addEventListener('touchstart', function() { on(); }, { passive: true });
+    zone.addEventListener('touchend', function() { off(); navigate(zone.dataset.view); });
+  });
+
+  /* ── MAKERSPACE box hover & click ── */
+  var msBorder = document.getElementById('ms-border');
+  var msCircles = ['c-place','c-people','c-stuff'].map(function(id){ return document.getElementById(id); });
+  var msLink = document.querySelector('.makerspace-link');
+  if (msLink) {
+    msLink.addEventListener('mouseenter', function() {
+      if (msBorder) msBorder.classList.add('lit');
+      msCircles.forEach(function(c){ if(c) c.classList.add('lit'); });
+      playHover();
+    });
+    msLink.addEventListener('mouseleave', function() {
+      if (msBorder) msBorder.classList.remove('lit');
+      msCircles.forEach(function(c){ if(c) c.classList.remove('lit'); });
+    });
+    msLink.addEventListener('click', function() { window.location.href = 'ann-story.html'; });
+    msLink.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.location.href = 'ann-story.html'; }
+    });
+  }
+
+  /* ── Hash routing on load ── */
+  var hash = location.hash.replace('#', '');
+  var valid = ['hub','place','people','stuff','dream','make','share','learn'];
+  if (hash && valid.indexOf(hash) !== -1) navigate(hash);
+
+  /* ── Init Lucide icons ── */
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+
+  /* ── Floorplan popup ── */
+  var CCM = 'https://clearcreekmakerspace.com/wp-content/uploads/';
+  var FP_ROOMS = {
+    woodshop: {
+      zone:'The Shop', accent:'var(--mesa)', name:'Woodshop', img:CCM+'2024/09/IMG_2363-1024x768.jpg',
+      makes:  ['Custom furniture, shelving & cabinetry', 'Handcrafted gifts, toys & keepsakes', 'Signs, frames & decorative pieces'],
+      skills: ['Joinery, wood selection & finishing', 'Hand & power tool safety', 'Measuring, layout & precision cutting'],
+      who:    ['The Entrepreneur', 'The Tinkerer', 'The Creative']
+    },
+    metal: {
+      zone:'The Shop', accent:'var(--mesa)', name:'Metal Shop', img:CCM+'2024/09/IMG_2349-scaled.jpg',
+      makes:  ['Custom brackets, hardware & tooling', 'Repaired bike parts, hinges & mechanisms', 'Lamps, stands & sculptural metal pieces'],
+      skills: ['Precision measuring, filing & drilling', 'Lathe & mill basics', 'Reading metal grades & safe handling'],
+      who:    ['The Tinkerer', 'The Career Changer', 'The Entrepreneur']
+    },
+    welding: {
+      zone:'The Shop', accent:'var(--mesa)', name:'Welding Bay', img:CCM+'2024/09/IMG_2350-scaled.jpg',
+      makes:  ['Steel furniture, gates & railings', 'Trailer repairs & bike frames', 'Large-scale sculpture & structural art'],
+      skills: ['MIG & TIG welding fundamentals', 'Plasma cutting & angle grinding', 'Weld prep, safety & reading metal'],
+      who:    ['The Tinkerer', 'The Career Changer', 'The Entrepreneur']
+    },
+    printing: {
+      zone:'Fab Lab', accent:'var(--foothills)', name:'3D Printing', img:CCM+'2024/09/IMG_2357-1024x768.jpg',
+      makes:  ['Working prototypes of your product idea', 'Replacement parts for things you thought were gone forever', 'Miniatures, props, enclosures & one-of-a-kind objects'],
+      skills: ['CAD design & 3D modeling from scratch', 'Slicing settings, supports & material choice', 'Post-processing & finishing prints'],
+      who:    ['The Entrepreneur', 'The Tinkerer', 'The Learner']
+    },
+    laser: {
+      zone:'Fab Lab', accent:'var(--foothills)', name:'Laser Lab', img:CCM+'2025/01/Website_InfoBlocks_HowWorks_Cricut-1024x881.png',
+      makes:  ['Personalized gifts, awards & signage', 'Jewelry, ornaments & cut leather goods', 'Architectural models, stencils & inlays'],
+      skills: ['Vector design for cut & engrave', 'Material settings for wood, acrylic, leather & more', 'Combining layers for depth and color'],
+      who:    ['The Creative', 'The Entrepreneur', 'The Learner']
+    },
+    electronics: {
+      zone:'Fab Lab', accent:'var(--foothills)', name:'Electronics', img:CCM+'2024/09/IMG_2337-scaled.jpg',
+      makes:  ['Custom gadgets, controllers & wearables', 'Electronics you thought couldn\'t be repaired', 'Smart home sensors, synthesizers & interactive art'],
+      skills: ['Soldering, desoldering & circuit reading', 'Arduino & microcontroller programming', 'Diagnosing, debugging & replacing components'],
+      who:    ['The Tinkerer', 'The Career Changer', 'The Learner']
+    },
+    textiles: {
+      zone:'Fab Lab', accent:'var(--foothills)', name:'Soft Goods', img:CCM+'2024/09/IMG_2336-scaled.jpg',
+      makes:  ['Bags, altered clothing & full costumes', 'Quilts, pillows, curtains & upholstery', 'Embroidered gifts, plush toys & accessories'],
+      skills: ['Pattern drafting & fabric cutting', 'Machine sewing & hand finishing techniques', 'Embroidery, appliqué & textile design'],
+      who:    ['The Creative', 'The Entrepreneur', 'The Learner']
+    },
+    welcome: {
+      zone:'Commons', accent:'var(--creek)', name:'Welcome', img:CCM+'2024/10/IMG_3449-1024x768.jpg',
+      makes:  ['Your first real connection to this world', 'A plan for the project you\'ve been putting off', 'The beginning of something you can\'t quite name yet'],
+      skills: ['Learning what\'s actually possible here', 'Finding out who else is in the building', 'Figuring out exactly where to start'],
+      who:    ['First-time visitors', 'The Curious Newcomer', 'Anyone who\'s ever thought "I wish I knew how to make that"']
+    },
+    cowork: {
+      zone:'Commons', accent:'var(--creek)', name:'Coworking', img:CCM+'2024/10/IMG_3450-768x1024.jpg',
+      makes:  ['Business plans, pitch decks & product briefs', 'Side projects that become real businesses', 'The kind of focus you can\'t get anywhere else'],
+      skills: ['Thinking alongside people who build things', 'Turning a vague idea into a concrete first step', 'Knowing when to ask for help — and who to ask'],
+      who:    ['The Entrepreneur', 'The Career Changer', 'The Mentor']
+    },
+    classroom: {
+      zone:'Commons', accent:'var(--creek)', name:'Classroom', img:CCM+'2024/10/IMG_3460-1024x768.jpg',
+      makes:  ['New skills built from scratch', 'The confidence to try it on your own next time', 'Community projects that start as a class topic'],
+      skills: ['Hands-on intro to any tool in the building', 'Peer learning in small, friendly groups', 'Going from "I\'ve never done this" to first finished project'],
+      who:    ['The Learner', 'The Career Changer', 'The Mentor — teaching']
+    },
+    kitchen: {
+      zone:'Commons', accent:'var(--creek)', name:'Kitchen', img:CCM+'2024/09/Clear_Creek_Maker_Space-10_HQ-1024x688.jpg',
+      makes:  ['Unexpected collaborations', 'The spark that starts the next project', 'A community that feels like a neighborhood'],
+      skills: ['Knowing when to step away from the bench', 'Learning from someone doing something completely different', 'Building the relationships that last'],
+      who:    ['Everyone — this might be the most important room in the building']
+    }
+  };
+
+  function openFpPopup(roomKey) {
+    var d = FP_ROOMS[roomKey];
+    if (!d) return;
+    var popup = document.getElementById('fp-popup');
+    popup.style.setProperty('--fp-accent', d.accent);
+    document.getElementById('fp-zone-label').textContent = d.zone;
+    document.getElementById('fp-room-name').textContent  = d.name;
+    var img = document.getElementById('fp-room-img');
+    if (img) { img.src = d.img; img.alt = d.name; }
+    var html = '';
+    if (d.makes)  html += '<p class="fp-sec-label">What you can make</p><ul class="fp-bullets">'  + d.makes.map(function(t){  return '<li>' + t + '</li>'; }).join('') + '</ul>';
+    if (d.skills) html += '<p class="fp-sec-label">Skills you\'ll pick up</p><ul class="fp-bullets">' + d.skills.map(function(t){ return '<li>' + t + '</li>'; }).join('') + '</ul>';
+    if (d.who)    html += '<p class="fp-sec-label">Who comes here</p><div class="fp-who">'         + d.who.map(function(w){   return '<span class="fp-who-chip">' + w + '</span>'; }).join('') + '</div>';
+    document.getElementById('fp-content').innerHTML = html;
+    document.getElementById('fp-overlay').classList.add('open');
+    popup.classList.add('open');
+    popup.scrollTop = 0;
+    document.querySelectorAll('.fp-room rect').forEach(function(r){ r.classList.remove('active'); });
+    document.querySelectorAll('.fp-room[data-room="' + roomKey + '"] rect').forEach(function(r){ r.classList.add('active'); });
+  }
+
+  function closeFpPopup() {
+    document.getElementById('fp-overlay').classList.remove('open');
+    document.getElementById('fp-popup').classList.remove('open');
+    document.querySelectorAll('.fp-room rect').forEach(function(r){ r.classList.remove('active'); });
+  }
+
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('#fp-close, #fp-overlay')) closeFpPopup();
+  });
+
+  document.querySelectorAll('.fp-room').forEach(function(g) {
+    var key = g.dataset.room;
+    g.addEventListener('click', function(){ openFpPopup(key); });
+    g.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openFpPopup(key); }
+    });
+  });
+
+  /* ── Stuff category popup ── */
+  var ST_CATS = {
+    tools: {
+      eyebrow: 'Category 01 · Hand & Power',
+      name: 'Tools',
+      img: CCM + '2024/09/IMG_2363-1024x768.jpg',
+      grad: 'linear-gradient(135deg, #C87040 0%, #8A3A18 100%)',
+      accent: 'var(--mesa)',
+      desc: 'Routers, drills, sanders, measuring instruments, clamps. The ones you reach for a few times a year but can\'t justify owning — plus the ones that are simply better maintained here than anywhere else.',
+      items: [
+        { name: 'Hand Tools',         img: CCM + '2024/09/IMG_2363-1024x768.jpg',
+          list: ['Hammers & mallets (claw, rubber, dead-blow)', 'Hand saws — crosscut, rip & Japanese pull saw', 'Chisels & gouges (bench, mortise & carving)', 'Files, rasps & card scrapers', 'Clamps — bar, C-clamp, pipe & spring (dozens of each)', 'Squares & marking gauges (try, combination, bevel)', 'Bench & block planes', 'Screwdrivers, pliers & wire cutters'] },
+        { name: 'Power Tools',        img: CCM + '2024/09/IMG_2349-scaled.jpg',
+          list: ['Circular saw', 'Jigsaw', 'Random-orbital sander', 'Drill/driver — corded & cordless', 'Plunge & fixed-base routers', 'Oscillating multi-tool', 'Angle grinder', 'Heat gun', 'Rotary tool (Dremel)', 'Air compressor + brad nailer & finish nailer'] },
+        { name: 'Measuring & Layout', img: CCM + '2024/09/IMG_2350-scaled.jpg',
+          list: ['Digital & analog calipers', 'Tape measures & folding rules', 'Speed & combination squares', 'Levels — torpedo, 48-in & laser level', 'Dial indicators & gauge blocks', 'Center finders & marking gauges', 'Protractors & angle finders', 'Chalk lines & plumb bobs'] },
+        { name: 'Finishing',          img: CCM + '2024/09/IMG_2337-scaled.jpg',
+          list: ['Sandpaper 40–2000 grit & sanding blocks', 'Card & cabinet scrapers', 'Random-orbital sander', 'Tack cloth & lint-free rags', 'Stain, oil & lacquer sample library', 'Natural & synthetic brush sets', 'Spray supplies & respirators', 'Wood filler, epoxy & putty'] }
+      ],
+      note: 'Most hand tools start as member donations. The community inventories and maintains them through regular tool-care days.'
+    },
+    machines: {
+      eyebrow: 'Category 02 · Industrial Scale',
+      name: 'Machines',
+      img: CCM + '2024/09/IMG_2357-1024x768.jpg',
+      grad: 'linear-gradient(135deg, #4A8A38 0%, #26521A 100%)',
+      accent: 'var(--foothills)',
+      desc: 'Capital equipment that most people will never own: 3D printers, laser engravers, table saws, lathes, and welding rigs. Members vote on each major purchase — and every new machine needs a certified trainer before it hits the floor.',
+      items: [
+        { name: '3D Printers',      img: CCM + '2024/09/IMG_2357-1024x768.jpg',
+          list: ['Bambu Lab X1-Carbon (FDM, multi-material)', 'Prusa MK4 (FDM, workhorse)', 'MSLA resin printer for fine detail', 'Filament dryer & storage', 'UV cure light & IPA rinse station', 'Print-removal & finishing tools'] },
+        { name: 'Laser Engravers',  img: CCM + '2025/01/Website_InfoBlocks_HowWorks_Cricut-1024x881.png',
+          list: ['CO₂ laser cutter (large bed, cuts ½" wood or acrylic)', 'Diode laser for engraving & lighter cutting', 'Vinyl cutter / Cricut Maker', 'Air filtration & fume extraction', 'Rotary attachment for cylindrical objects', 'Material test sample sheets'] },
+        { name: 'Woodworking',      img: CCM + '2024/09/IMG_2363-1024x768.jpg',
+          list: ['Cabinet table saw (Powermatic)', '14" bandsaw', '8" jointer', '13" thickness planer', 'Router table with router lift', '10" sliding compound miter saw', 'Scroll saw', 'Drum sander', 'Wood lathe'] },
+        { name: 'Metal & Welding',  img: CCM + '2024/09/IMG_2350-scaled.jpg',
+          list: ['Manual metal lathe', 'Vertical knee mill', 'MIG welder (Miller)', 'TIG welder', 'Plasma cutter', 'Spot welder', 'Angle grinder stations', 'Metal chop saw'] }
+      ],
+      note: 'New machines are added by member vote. Each purchase is funded by dues or a targeted fundraiser proposed by the community.'
+    },
+    consumables: {
+      eyebrow: 'Category 03 · Materials & Supplies',
+      name: 'Materials',
+      img: CCM + '2024/09/IMG_2336-scaled.jpg',
+      grad: 'linear-gradient(135deg, #3A9AB8 0%, #195872 100%)',
+      accent: 'var(--creek)',
+      desc: 'Raw materials that get used up: wood, filament, fabric, wire, solder, clay. Some are pooled as community stock maintained by dues. Others live in personal bins and can be lent or sold between members.',
+      items: [
+        { name: 'Wood & Sheet Goods', img: CCM + '2024/09/IMG_2363-1024x768.jpg',
+          list: ['Plywood — ¼" through ¾" (pine & birch)', 'MDF in various thicknesses', 'Hardwoods: oak, maple, walnut, cherry & pine', 'Poplar for practice & painting', 'Dowels, wooden plugs & small shapes', 'Wood glue, construction adhesive & epoxy'] },
+        { name: 'Filament & Resin',   img: CCM + '2024/09/IMG_2357-1024x768.jpg',
+          list: ['PLA — white, black & a full color range', 'PETG (clear & colored — great for functional parts)', 'TPU (flexible & grippy)', 'ABS (heat-resistant)', 'Specialty: silk, wood-fill & carbon-fiber PLA', 'Standard grey & clear MSLA resin', 'Castable resin for jewelry'] },
+        { name: 'Fabric & Notions',   img: CCM + '2024/09/IMG_2336-scaled.jpg',
+          list: ['Cotton muslin & broadcloth', 'Canvas & denim for bags & workwear', 'Fleece, felt & craft foam', 'Thread — 50+ colors (polyester & cotton)', 'Interfacing, stabilizers & batting', 'Zippers, buttons, snaps & D-rings', 'Elastic, bias tape & seam binding'] },
+        { name: 'Electronics Parts',  img: CCM + '2024/09/IMG_2337-scaled.jpg',
+          list: ['Resistor, capacitor & diode assortment drawers', 'LEDs — all colors, through-hole & SMD', 'Arduino Uno, Nano & Mega boards', 'Raspberry Pi & microcontroller boards', 'Breadboards & jumper wire kits', 'Sensors: temperature, motion, light, ultrasonic', 'Wire & cable (hookup, stranded, shielded)', 'Solder, flux & desoldering wick', 'Heat shrink tubing & JST/Dupont connectors'] }
+      ],
+      note: 'Community stock replenishes from monthly dues. Members can also post surplus materials in the swap board for others to claim or buy.'
+    }
+  };
+
+  function renderStGrid(d) {
+    var grid = document.getElementById('st-item-grid');
+    grid.innerHTML = d.items.map(function(item, i) {
+      return '<div class="st-item-tile" role="button" tabindex="0" data-subcat="' + i + '">' +
+        '<img class="st-item-tile-img" src="' + item.img + '" alt="' + item.name + '" loading="lazy">' +
+        '<div class="st-item-label">' + item.name + '</div>' +
+      '</div>';
+    }).join('');
+    grid.querySelectorAll('.st-item-tile').forEach(function(tile) {
+      var idx = parseInt(tile.dataset.subcat);
+      tile.addEventListener('click', function() { showStSubview(d.items[idx], d); });
+      tile.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showStSubview(d.items[idx], d); }
+      });
+    });
+  }
+
+  function showStSubview(item, catData) {
+    var grid = document.getElementById('st-item-grid');
+    grid.innerHTML = '<div class="st-subview">' +
+      '<button class="st-subview-back" id="st-sub-back">← ' + item.name + '</button>' +
+      '<ul class="st-subview-list">' +
+      item.list.map(function(it){ return '<li>' + it + '</li>'; }).join('') +
+      '</ul></div>';
+    document.getElementById('st-sub-back').addEventListener('click', function() { renderStGrid(catData); });
+    document.getElementById('st-popup').scrollTop = 0;
+  }
+
+  function openStPopup(catKey) {
+    var d = ST_CATS[catKey];
+    if (!d) return;
+    var popup = document.getElementById('st-popup');
+    popup.style.setProperty('--st-grad', d.grad);
+    popup.style.setProperty('--st-accent', d.accent);
+    document.getElementById('st-eyebrow').textContent = d.eyebrow;
+    document.getElementById('st-name').textContent    = d.name;
+    document.getElementById('st-himg').src            = d.img;
+    document.getElementById('st-himg').alt            = d.name;
+    document.getElementById('st-desc').textContent    = d.desc;
+    document.getElementById('st-note-text').textContent = d.note;
+    renderStGrid(d);
+    document.getElementById('st-overlay').classList.add('open');
+    popup.classList.add('open');
+    popup.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }
+
+  function closeStPopup() {
+    document.getElementById('st-overlay').classList.remove('open');
+    document.getElementById('st-popup').classList.remove('open');
+  }
+
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('#st-close, #st-overlay')) closeStPopup();
+  });
+
+  document.querySelectorAll('.stuff-cat').forEach(function(el) {
+    var key = el.dataset.cat;
+    el.addEventListener('click', function(){ openStPopup(key); });
+    el.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openStPopup(key); }
+    });
+  });
+})();
+</script>
+
+<!-- ═══ Popups at body level (outside .view elements to avoid transform stacking context) ═══ -->
+
+<!-- Floorplan popup -->
+<div class="fp-overlay" id="fp-overlay"></div>
+<div class="fp-popup" id="fp-popup">
+  <div class="fp-popup-img-wrap"><img id="fp-room-img" src="" alt=""></div>
+  <button class="fp-close" id="fp-close" aria-label="Close">✕</button>
+  <p class="fp-popup-eyebrow" id="fp-zone-label"></p>
+  <p class="fp-popup-name"    id="fp-room-name"></p>
+  <div id="fp-content"></div>
+</div>
+
+<!-- Stuff category popup -->
+<div class="fp-overlay" id="st-overlay"></div>
+<div class="st-popup" id="st-popup">
+  <div class="st-popup-header">
+    <img class="st-popup-header-img" id="st-himg" src="" alt="">
+    <div class="st-popup-header-ov"></div>
+    <div class="st-popup-htxt">
+      <div class="st-popup-eyebrow" id="st-eyebrow"></div>
+      <div class="st-popup-name" id="st-name"></div>
+    </div>
+    <button class="st-close" id="st-close" aria-label="Close">✕</button>
+  </div>
+  <div class="st-popup-body">
+    <p class="st-popup-desc" id="st-desc"></p>
+    <p class="st-sec-label">What you get access to</p>
+    <div class="st-item-grid" id="st-item-grid"></div>
+    <div class="st-popup-note" id="st-note">
+      <svg class="st-popup-note-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <span id="st-note-text"></span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
